@@ -14,9 +14,6 @@ if response.status_code == 200:
     # Parse the page content
     soup = BeautifulSoup(response.text, 'html.parser')
 
-    # Check if the table structure is still correct by printing the raw page content for inspection
-    print(soup.prettify())  # This helps you inspect the full structure of the page
-
     # Find all <tr> elements which represent rows in the table
     ipo_data = soup.find_all('tr')
 
@@ -28,26 +25,23 @@ if response.status_code == 200:
         # Find all <td> elements (columns) in the row
         columns = row.find_all('td')
 
-        # Print each row's column count to debug where things might be breaking
-        print(f"Columns found: {len(columns)}")  # Debugging line to check number of columns
-
         # Ensure that the row has enough columns to extract IPO name, GMP, and Est Listing
-        if len(columns) > 3:
+        if len(columns) > 2:
             # Extract IPO name (first <td> contains the <a> tag for IPO name)
             ipo_name = columns[0].find('a').text.strip() if columns[0].find('a') else None
 
-            # Extract GMP value (4th <td>)
+            # Extract GMP value (4th <td>, containing GMP value)
             gmp = columns[3].text.strip()
 
-            # Extract Est Listing (3rd <td> or any other relevant position)
-            est_listing_td = columns[2].find('b')  # Find the <b> tag inside the Est Listing column
+            # Extract Est Listing (5th <td>, containing the estimated listing value in parentheses)
+            est_listing_td = columns[4].find('b')  # Find the <b> tag inside the Est Listing column
             if est_listing_td:
                 # Get the text and split it into numeric value and percentage
-                est_listing_text = est_listing_td.text.strip()  # "314 (19.39%)"
+                est_listing_text = est_listing_td.text.strip()  # "426 (50.53%)"
                 if '(' in est_listing_text and ')' in est_listing_text:
                     # Split into numeric value and percentage
-                    numeric_value = est_listing_text.split(' ')[0]  # "314"
-                    percentage = est_listing_text.split('(')[1].split(')')[0]  # "19.39%"
+                    numeric_value = est_listing_text.split(' ')[0]  # "426"
+                    percentage = est_listing_text.split('(')[1].split(')')[0]  # "50.53%"
                     est_listing = f"{numeric_value} ({percentage})"
                 else:
                     est_listing = est_listing_text
