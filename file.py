@@ -25,7 +25,7 @@ if response.status_code == 200:
         # Find all <td> elements (columns) in the row
         columns = row.find_all('td')
 
-        # Ensure that the row has enough columns to extract IPO name and GMP
+        # Ensure that the row has enough columns to extract IPO name, GMP, and Est Listing
         if len(columns) > 3:
             # Extract IPO name (first <td> contains the <a> tag for IPO name)
             ipo_name = columns[0].find('a').text.strip() if columns[0].find('a') else None
@@ -33,11 +33,15 @@ if response.status_code == 200:
             # Extract GMP value (4th <td>)
             gmp = columns[3].text.strip()
 
-            # Only add to the list if both IPO name and GMP are available
-            if ipo_name and gmp:
+            # Extract Est Listing (3rd <td> or any other relevant position)
+            est_listing = columns[2].text.strip() if len(columns) > 2 else None
+
+            # Only add to the list if all three values are available
+            if ipo_name and gmp and est_listing:
                 ipo_list.append({
                     "IPO": ipo_name,
-                    "GMP": gmp
+                    "GMP": gmp,
+                    "Est Listing": est_listing
                 })
 
     # Convert the list to JSON and print it
