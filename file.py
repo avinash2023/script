@@ -34,7 +34,19 @@ if response.status_code == 200:
             gmp = columns[3].text.strip()
 
             # Extract Est Listing (3rd <td> or any other relevant position)
-            est_listing = columns[2].text.strip() if len(columns) > 2 else None
+            est_listing_td = columns[2].find('b')  # Find the <b> tag inside the Est Listing column
+            if est_listing_td:
+                # Get the text and split it into numeric value and percentage
+                est_listing_text = est_listing_td.text.strip()  # "314 (19.39%)"
+                if '(' in est_listing_text and ')' in est_listing_text:
+                    # Split into numeric value and percentage
+                    numeric_value = est_listing_text.split(' ')[0]  # "314"
+                    percentage = est_listing_text.split('(')[1].split(')')[0]  # "19.39%"
+                    est_listing = f"{numeric_value} ({percentage})"
+                else:
+                    est_listing = est_listing_text
+            else:
+                est_listing = None
 
             # Only add to the list if all three values are available
             if ipo_name and gmp and est_listing:
