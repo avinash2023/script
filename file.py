@@ -14,6 +14,9 @@ if response.status_code == 200:
     # Parse the page content
     soup = BeautifulSoup(response.text, 'html.parser')
 
+    # Check if the table structure is still correct by printing the raw page content for inspection
+    print(soup.prettify())  # This helps you inspect the full structure of the page
+
     # Find all <tr> elements which represent rows in the table
     ipo_data = soup.find_all('tr')
 
@@ -24,6 +27,9 @@ if response.status_code == 200:
     for row in ipo_data:
         # Find all <td> elements (columns) in the row
         columns = row.find_all('td')
+
+        # Print each row's column count to debug where things might be breaking
+        print(f"Columns found: {len(columns)}")  # Debugging line to check number of columns
 
         # Ensure that the row has enough columns to extract IPO name, GMP, and Est Listing
         if len(columns) > 3:
